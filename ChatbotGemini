@@ -1,0 +1,168 @@
+''' CHATBOT UTILIZANDO O GOOGLE GEMINI '''
+
+# importando o SDK Python
+import google.generativeai as genai
+
+# setando a API Key
+GOOGLE_API_KEY="YOUR_API_KEY"
+genai.configure(api_key=GOOGLE_API_KEY)
+
+
+print("\n|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|\n")
+print("\t\t <|> GOOGLE GEMINI <|>")
+print("\n|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|\n")
+
+# escolhas das configurações de parametro
+print("\n**Configurações de parametro**\n")
+cadidate_count = int(input("Quantidade de respostas possiveis -->\t"))
+temperature = float(input("\"Criatividade\" (de 0 a 1) -->\t"))
+
+# configuração de parametro
+generation_config = {
+    # quantidade de respostas possiveis
+    "candidate_count": cadidate_count,
+    # "criatividade" da AI
+    "temperature": temperature
+}
+
+print("\n|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|\n")
+
+# escolha das configurações de segurança
+print("\n**Configurações de segurança**\n")
+print("a) BLOCK_NONE\t\tb) BLOCK_ONLY_HIGH\tc) BLOCK_MEDIUM_AND_ABOVE\td) BLOCK_LOW_AND_ABOVE\t\te) HARM_BLOCK_THRESHOLD_UNSPECIFIED")
+print("Bloquear nenhum\t\tBloquear poucos\t\tBloquear alguns\t\t\tBloquear muitos\t\t\tBloqueio padrão\n")
+
+harassement_opt = input("\"Assédio\" -->\t").lower().replace(")", "")
+hate_opt = input("\"Discurso de ódio\" -->\t").lower().replace(")", "")
+sexual_opt = input("\"Sexualmente explícito\" -->\t").lower().replace(")", "")
+dangerous_opt = input("\"Material perigoso\" -->\t").lower().replace(")", "")
+
+# "assedio"
+if harassement_opt == "a" or harassement_opt == "block_none":
+  harassement = "BLOCK_NONE"
+elif harassement_opt == "b" or harassement_opt == " block_only_high":
+  harassement = "BLOCK_ONLY_HIGH"
+elif harassement_opt == "c" or harassement_opt == "block_medium_and_above":
+  harassement = "BLOCK_MEDIUM_AND_ABOVE"
+elif harassement_opt == "d" or harassement_opt == "block_low_and_above":
+  harassement = "BLOCK_LOW_AND_ABOVE"
+elif harassement_opt == "e" or harassement_opt == "harm_block_threshold_unspecified":
+  harassement = "HARM_BLOCK_THRESHOLD_UNSPECIFIED"
+
+# "discurso de odio"
+if hate_opt == "a" or hate_opt == "block_none":
+  hate = "BLOCK_NONE"
+elif hate_opt == "b" or hate_opt == " block_only_high":
+  hate = "BLOCK_ONLY_HIGH"
+elif hate_opt == "c" or hate_opt == "block_medium_and_above":
+  hate = "BLOCK_MEDIUM_AND_ABOVE"
+elif hate_opt == "d" or hate_opt == "block_low_and_above":
+  hate= "BLOCK_LOW_AND_ABOVE"
+elif hate_opt == "e" or hate_opt == "harm_block_threshold_unspecified":
+  hate = "HARM_BLOCK_THRESHOLD_UNSPECIFIED"
+  
+# "sexualmente explicito"
+if sexual_opt == "a" or sexual_opt == "block_none":
+  sexual = "BLOCK_NONE"
+elif sexual_opt == "b" or sexual_opt == " block_only_high":
+  sexual = "BLOCK_ONLY_HIGH"
+elif sexual_opt == "c" or sexual_opt == "block_medium_and_above":
+  sexual = "BLOCK_MEDIUM_AND_ABOVE"
+elif sexual_opt == "d" or sexual_opt == "block_low_and_above":
+  sexual = "BLOCK_LOW_AND_ABOVE"
+elif sexual_opt == "e" or sexual_opt == "harm_block_threshold_unspecified":
+  sexual = "HARM_BLOCK_THRESHOLD_UNSPECIFIED"
+
+# "material perigoso"  
+if dangerous_opt == "a" or dangerous_opt == "block_none":
+  dangerous = "BLOCK_NONE"
+elif dangerous_opt == "b" or dangerous_opt == " block_only_high":
+  dangerous = "BLOCK_ONLY_HIGH"
+elif dangerous_opt == "c" or dangerous_opt == "block_medium_and_above":
+  dangerous = "BLOCK_MEDIUM_AND_ABOVE"
+elif dangerous_opt == "d" or dangerous_opt == "block_low_and_above":
+  dangerous = "BLOCK_LOW_AND_ABOVE"
+elif dangerous_opt == "e" or dangerous_opt == "harm_block_threshold_unspecified":
+  dangerous = "HARM_BLOCK_THRESHOLD_UNSPECIFIED"
+
+# configuração de segurança
+safety_settings = {
+    # "assedio"
+    "HARASSMENT": harassement,
+    # "discurso de odio"
+    "HATE": hate,
+    # "sexualmente explicito"
+    "SEXUAL": sexual,
+    # "material perigoso"
+    "DANGEROUS": dangerous
+}
+
+print("\n|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|\n")
+
+# escolha do modelo generativo
+print("\n**Escolha o Modelo Generativo**\n")
+
+letra_num = 0
+
+modelos = []
+
+# iteração pela lista de modelos do Gemini
+for m in genai.list_models():
+  if 'generateContent' in m.supported_generation_methods:
+    modelos.append(m.name)
+
+# printando uma lista de modelos generativos    
+for modelo in modelos:
+  letra = chr(ord('a') + letra_num)
+  print(f"{letra}) {modelo}")
+  letra_num += 1
+
+# modelo generativo
+model_opt = input("\nModelo generativo -->\t").lower().replace(")", "")
+
+model_name = modelos[ord(model_opt) - ord('a')]
+
+print("\n|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|\n")
+    
+# setando o modelo generativo
+model = genai.GenerativeModel(model_name=model_name, safety_settings=safety_settings, generation_config=generation_config)
+
+
+# printando as configurações da AI
+print(f"Modelo generativo:\t\t\t{model_name}\nQuantidade de respostas possiveis:\t{cadidate_count}\n\"Criatividade\":\t\t\t\t{temperature}\n\"Assédio\":\t\t\t\t{harassement}\n\"Discurso de odio\":\t\t\t{hate}\n\"Sexualmente explícito\":\t\t{sexual}\n\"Material perigoso\":\t\t\t{dangerous}")
+
+print("\n|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|\n")
+
+print("\n\t\t\t**Chat**\n")
+
+print("\n<|>--------------------------------------------------------<|>\n")
+
+# iniciando o chat
+chat = model.start_chat(history=[])
+
+# prompt
+prompt = input("PROMPT (digite \"end\" para encerrar) -->\t")
+print("\n<|>--------------------------------------------------------<|>\n")
+
+# repetição do chat
+while prompt != "end":
+  # criação da resposta da AI
+  response = chat.send_message(prompt)
+  print(f"RESPOSTA -->\t{response.text}")
+  print("\n<|>--------------------------------------------------------<|>\n")
+  # prompt
+  prompt = input("PROMPT (digite \"end\" para encerrar) -->\t")
+  print("\n<|>----------------------------------------------------<|>\n")
+  
+print("\n|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|\n")
+
+# printando as configurações da AI
+print(f"Modelo generativo:\t\t\t{model_name}\nQuantidade de respostas possiveis:\t{cadidate_count}\n\"Criatividade\":\t\t\t\t{temperature}\n\"Assédio\":\t\t\t\t{harassement}\n\"Discurso de odio\":\t\t\t{hate}\n\"Sexualmente explícito\":\t\t{sexual}\n\"Material perigoso\":\t\t\t{dangerous}")
+
+print("\n|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|\n")
+
+print("\t\t <|> GOOGLE GEMINI <|>")
+
+print("\n|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|\n")
+
+''' Kauã Costa Seabrra 05/2024 '''
